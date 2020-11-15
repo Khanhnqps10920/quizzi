@@ -2,9 +2,15 @@
   <base-section id="features" class="secondary">
     <v-responsive class="mx-auto" max-width="1350">
       <v-container fluid>
+        <h4 class="text-h3 white--text mb-2 text-center">Các Bài Quizzi</h4>
         <v-row>
-          <v-col v-for="item in data" :key="item.Id" cols="12" sm="4" md="3">
-            <v-card class="subject" elevation="2" max-height="500">
+          <v-col v-for="item in items" :key="item.Id" cols="12" sm="4" md="3">
+            <v-card
+              class="subject"
+              elevation="2"
+              max-height="500"
+              @click="handleItemClick(item)"
+            >
               <v-img
                 height="300"
                 :src="require(`@/assets/${item.Logo}`)"
@@ -17,8 +23,23 @@
             </v-card>
           </v-col>
         </v-row>
-        <v-btn elevation="2" class="d-block mt-5 mx-auto">
-          Watch More
+
+        <v-btn
+          elevation="2"
+          class="d-block mt-5 mx-auto"
+          v-if="limit !== subject.length"
+          @click="limit = limit + 12"
+        >
+          Xem Thêm
+        </v-btn>
+
+        <v-btn
+          elevation="2"
+          class="d-block mt-5 mx-auto"
+          v-if="limit === subject.length"
+          @click="limit = limit - 12"
+        >
+          Đóng
         </v-btn>
       </v-container>
     </v-responsive>
@@ -32,11 +53,35 @@ export default {
   mixins: [subject],
   name: "SectionFeatures",
 
+  data() {
+    return {
+      limit: 8,
+      true: true,
+    };
+  },
+
   computed: {
-    data() {
-      return this.subject.splice(this.subject.length - 8, this.subject.length);
-    }
-  }
+    items() {
+      const subjectClone = [...this.subject];
+      const data = subjectClone.splice(0, this.limit);
+
+      return data;
+    },
+  },
+  methods: {
+    handleItemClick(item) {
+      this.$router.push({
+        name: "Quizz",
+        params: {
+          id: item.Id,
+        },
+      });
+    },
+  },
+
+  created() {
+    console.log(this.subject);
+  },
 };
 </script>
 

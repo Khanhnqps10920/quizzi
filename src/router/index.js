@@ -41,6 +41,14 @@ const router = new Router({
           component: () => import('@/views/pro/Index.vue'),
           meta: { src: require('@/assets/pro.jpg') },
         },
+
+        {
+          path: 'quizz/:id',
+          name: 'Quizz',
+          component: () => import('@/views/quizz/Quizz.vue')
+        }
+
+
         // {
         //   path: '*',
         //   name: 'FourOhFour',
