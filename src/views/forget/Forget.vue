@@ -15,10 +15,10 @@
       <v-form class="px-3" @submit.prevent="handleSignin" ref="form">
         <!-- name -->
         <v-text-field
-          label="Tên đăng nhập"
+          label="Email"
           type="text"
-          :rules="rules.username"
-          v-model="form.username"
+          :rules="rules.email"
+          v-model="form.email"
           required
         >
         </v-text-field>
@@ -33,7 +33,7 @@
           elavation="2"
           small
         >
-          Submit
+          Nhập
         </v-btn>
       </v-form>
     </v-card>
@@ -41,31 +41,33 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
       loading: false,
 
       form: {
-        username: "",
-        password: "",
+        email: ""
       },
 
       rules: {
         username: [
-          (val) =>
-            (val || "").length > 0 || "Tên đăng nhập không được để trống",
+          val => (val || "").length > 0 || "Tên đăng nhập không được để trống"
         ],
         password: [
-          (val) => (val || "").length > 0 || "Mật khẩu không được để trống",
-        ],
+          val => (val || "").length > 0 || "Mật khẩu không được để trống"
+        ]
       },
 
-      errorMess: "",
+      errorMess: ""
     };
   },
 
   computed: {
+    ...mapState(["users"]),
+
     width() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
@@ -93,33 +95,31 @@ export default {
         case "xl":
           return "auto";
       }
-    },
+    }
   },
 
   methods: {
     handleSignin() {
+      console.log("111");
       const valid = this.$refs.form.validate();
       if (!valid) return;
-
       const {
-        form: { username, password },
+        form: { email }
       } = this;
-      this.loading = true;
 
-      // default
-      if (username === "admin" && password === "123456") {
-        setTimeout(() => {
-          this.$store.dispatch("login", { username, password });
-          this.$router.push("/");
-        }, 1000);
-      } else {
-        this.loading = false;
-
-        this.errorMess = "sai user name hoac mat khau";
+      for (const user of this.users) {
+        if (user.email === email) {
+          this.errorMess = "Mật khẩu của bạn là" + user.password;
+          this.loading = false;
+        } else {
+          this.errorMess = "Email không hợp lệ";
+          this.loading = false;
+        }
       }
+
       // throw error
-    },
-  },
+    }
+  }
 };
 </script>
 

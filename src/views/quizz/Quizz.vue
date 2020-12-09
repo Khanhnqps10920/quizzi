@@ -9,7 +9,7 @@
         <v-spacer></v-spacer>
 
         <v-toolbar-title>
-          {{ total }}
+          {{ "Hiện tại bạn đang có " + total + " điểm" }}
         </v-toolbar-title>
       </v-toolbar>
 
@@ -22,7 +22,6 @@
         <v-card-title>
           <p class="text-h6">{{ i + 1 + " " + quiz.Text }}</p>
           <v-spacer></v-spacer>
-          <p class="text-subtitle">{{ quiz.Marks }} point</p>
         </v-card-title>
         <v-card-text>
           <v-radio-group v-model="currentAnswer">
@@ -70,7 +69,7 @@ export default {
       total: 0,
       quizs: [],
       finish: false,
-      totalScore: 0,
+      totalScore: 0
     };
   },
 
@@ -82,6 +81,7 @@ export default {
         alert("Hãy chọn 1 đáp án");
         return;
       }
+      console.log(this.currentAnswer, quiz.AnswerId);
       // total
       this.total =
         quiz.AnswerId === this.currentAnswer
@@ -94,20 +94,18 @@ export default {
 
     handleFinish() {
       this.finish = true;
-    },
+    }
   },
 
   created() {
-    this.subjectItem = this.subject.find(
-      (el) => el.Id === this.$route.params.id
-    );
+    this.subjectItem = this.subject.find(el => el.Id === this.$route.params.id);
 
     this.quizs = require(`@/data/Quizs/${this.$route.params.id}`);
 
     this.totalScore = this.quizs.reduce((acc, cur) => {
       return acc + cur.Marks;
     }, 0);
-  },
+  }
 };
 </script>
 

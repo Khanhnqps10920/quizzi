@@ -31,11 +31,11 @@
             <v-btn
               icon
               color=""
-              class="font-weight-bold"
+              class="font-weight-bold mr-5"
               v-bind="attrs"
               v-on="on"
             >
-              Tài Khoản
+              {{ currentUser ? currentUser.fullname : "Tài Khoản" }}
             </v-btn>
           </template>
 
@@ -46,6 +46,10 @@
                   >{{ title }}
                 </router-link>
               </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title @click="logout">Đăng xuất</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -58,11 +62,17 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+
 export default {
   name: "HomeAppBar",
 
   components: {
-    HomeDrawer: () => import("./Drawer"),
+    HomeDrawer: () => import("./Drawer")
+  },
+
+  computed: {
+    ...mapState(["currentUser"])
   },
 
   data: () => ({
@@ -70,14 +80,19 @@ export default {
     items: [
       { title: "Trang Chủ", link: "Home" },
       { title: "Về Chúng Tôi", link: "About" },
-      { title: "Liên Hệ", link: "Contact" },
+      { title: "Liên Hệ", link: "Contact" }
     ],
-    authLinks: [
-      { title: "Đăng Nhập", link: "/auth/login" },
-      { title: "Đăng Ký", link: "/auth/register" },
-      { title: "Quên Mật Khẩu", link: "/auth/forget" },
-    ],
+    authLinks: [{ title: "Thông tin", link: "/user" }]
   }),
+
+  methods: {
+    ...mapMutations(["setUser"]),
+
+    logout() {
+      this.setUser(null);
+      this.$router.push({ name: "Login" });
+    }
+  }
 };
 </script>
 

@@ -17,8 +17,8 @@
         <v-text-field
           label="Email"
           type="text"
-          :rules="rules.username"
-          v-model="form.username"
+          :rules="rules.email"
+          v-model="form.email"
           required
         >
         </v-text-field>
@@ -28,6 +28,15 @@
           type="text"
           :rules="rules.username"
           v-model="form.username"
+          required
+        >
+        </v-text-field>
+
+        <v-text-field
+          label="Tên của bạn"
+          type="text"
+          :rules="rules.fullname"
+          v-model="form.fullname"
           required
         >
         </v-text-field>
@@ -44,13 +53,18 @@
         <v-text-field
           label="Xác nhận mật khẩu"
           type="password"
-          :rules="rules.password"
-          v-model="form.password"
+          :rules="rules.confirmPass(form.password)"
+          v-model="confirmPass"
           required
         >
         </v-text-field>
 
         <p class="red--text" v-if="errorMess">{{ errorMess }}</p>
+
+        <v-radio-group v-model="form.gender">
+          <v-radio label="Nam" value="true"></v-radio>
+          <v-radio label="Nữ" value="false"></v-radio>
+        </v-radio-group>
 
         <router-link :to="{ name: 'Login' }"> Đã có tài khoản? </router-link>
         <v-btn
@@ -69,6 +83,8 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
   data() {
     return {
@@ -77,19 +93,28 @@ export default {
       form: {
         username: "",
         password: "",
+        fullname: "",
+        email: "",
+        gender: null
       },
+      confirmPass: "",
 
       rules: {
+        email: [val => (val || "").length > 0 || "Email không được để trống"],
         username: [
-          (val) =>
-            (val || "").length > 0 || "Tên đăng nhập không được để trống",
+          val => (val || "").length > 0 || "Tên đăng nhập không được để trống"
         ],
+        fullname: [val => (val || "").length > 0 || "Tên  không được để trống"],
         password: [
-          (val) => (val || "").length > 0 || "Mật khẩu không được để trống",
+          val => (val || "").length > 0 || "Mật khẩu không được để trống"
         ],
+
+        confirmPass(pass) {
+          return [v => v === pass || `Xác nhận mật khẩu không khớp`];
+        }
       },
 
-      errorMess: "",
+      errorMess: ""
     };
   },
 
@@ -121,33 +146,42 @@ export default {
         case "xl":
           return "auto";
       }
-    },
+    }
   },
 
   methods: {
+    ...mapMutations(["addUser", "setUser"]),
     handleSignin() {
       const valid = this.$refs.form.validate();
       if (!valid) return;
 
       const {
-        form: { username, password },
+        form: { username, password, gender, email, fullname }
       } = this;
       this.loading = true;
 
       // default
-      if (username === "admin" && password === "123456") {
-        setTimeout(() => {
-          this.$store.dispatch("login", { username, password });
-          this.$router.push("/");
-        }, 1000);
-      } else {
-        this.loading = false;
+      const id = Math.ceil(Math.random() * 100000);
+      const newUser = {
+        id,
+        username,
+        password,
+        fullname,
+        email,
+        gender,
+        birthday: "",
+        schoolfee: "",
+        marks: "0"
+      };
 
-        this.errorMess = "sai user name hoac mat khau";
-      }
+      this.addUser(newUser);
+      this.setUser(newUser);
+
+      this.$router.push({ name: "Home" });
+
       // throw error
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -156,7 +190,8 @@ export default {
   margin: 0;
   padding: 0 15px;
   width: 100%;
-  height: 100vh;
+  min-height: 100%;
+  height: 100%;
   background: linear-gradient(120deg, #2980b9, #8e44ad);
 }
 </style>

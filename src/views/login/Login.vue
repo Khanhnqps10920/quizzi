@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+
 export default {
   data() {
     return {
@@ -59,24 +61,25 @@ export default {
 
       form: {
         username: "",
-        password: "",
+        password: ""
       },
 
       rules: {
         username: [
-          (val) =>
-            (val || "").length > 0 || "Tên đăng nhập không được để trống",
+          val => (val || "").length > 0 || "Tên đăng nhập không được để trống"
         ],
         password: [
-          (val) => (val || "").length > 0 || "Mật khẩu không được để trống",
-        ],
+          val => (val || "").length > 0 || "Mật khẩu không được để trống"
+        ]
       },
 
-      errorMess: "",
+      errorMess: ""
     };
   },
 
   computed: {
+    ...mapState(["users"]),
+
     width() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
@@ -104,33 +107,46 @@ export default {
         case "xl":
           return "auto";
       }
-    },
+    }
   },
 
   methods: {
+    ...mapMutations(["setUser"]),
     handleSignin() {
       const valid = this.$refs.form.validate();
       if (!valid) return;
 
       const {
-        form: { username, password },
+        form: { username, password }
       } = this;
       this.loading = true;
 
       // default
-      if (username === "admin" && password === "123456") {
-        setTimeout(() => {
-          this.$store.dispatch("login", { username, password });
-          this.$router.push("/");
-        }, 1000);
-      } else {
-        this.loading = false;
 
-        this.errorMess = "sai user name hoac mat khau";
+      console.log(this.users);
+      for (const user of this.users) {
+        if (user.username === username && user.password === password) {
+          this.setUser(user);
+          this.$router.push({ name: "Home" });
+          return;
+        } else {
+          this.errorMess = "sai username hoặc mật khẩu";
+          this.loading = false;
+        }
       }
       // throw error
-    },
-  },
+      //   if (username === "admin" && password === "123456") {
+      //   setTimeout(() => {
+      //     this.$store.dispatch("login", { username, password });
+      //     this.$router.push("/");
+      //   }, 1000);
+      // } else {
+      //   this.loading = false;
+
+      //   this.errorMess = "sai user name hoac mat khau";
+      // }
+    }
+  }
 };
 </script>
 
@@ -139,7 +155,7 @@ export default {
   margin: 0;
   padding: 0 15px;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: linear-gradient(120deg, #2980b9, #8e44ad);
 }
 </style>
