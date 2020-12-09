@@ -68,11 +68,11 @@ export default {
   name: "HomeAppBar",
 
   components: {
-    HomeDrawer: () => import("./Drawer")
+    HomeDrawer: () => import("./Drawer"),
   },
 
   computed: {
-    ...mapState(["currentUser"])
+    ...mapState(["currentUser"]),
   },
 
   data: () => ({
@@ -80,9 +80,11 @@ export default {
     items: [
       { title: "Trang Chủ", link: "Home" },
       { title: "Về Chúng Tôi", link: "About" },
-      { title: "Liên Hệ", link: "Contact" }
+      { title: "Bài Học", link: "QuizzList" },
+
+      { title: "Liên Hệ", link: "Contact" },
     ],
-    authLinks: [{ title: "Thông tin", link: "/user" }]
+    authLinks: [{ title: "Thông tin", link: "/user" }],
   }),
 
   methods: {
@@ -91,8 +93,8 @@ export default {
     logout() {
       this.setUser(null);
       this.$router.push({ name: "Login" });
-    }
-  }
+    },
+  },
 };
 </script>
 

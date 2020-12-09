@@ -48,6 +48,15 @@ const router = new Router({
         },
 
         {
+          path:"quizzs",
+          name: "QuizzList",
+          component: () => import("@/views/quizzs/Quizzs.vue"),
+          meta: {
+            requiresAuth: false
+          }
+        },
+
+        {
           path: "quizz/:id",
           name: "Quizz",
           component: () => import("@/views/quizz/Quizz.vue"),
